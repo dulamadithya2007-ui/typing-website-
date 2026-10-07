@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBER-TYPER // High-Octane Arcade Typing Racer</title>
+  
+  <!-- Modern arcade typography (with system fallbacks) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/race.css">
+</head>
+<body>
+
+  <!-- Confetti Celebration Canvas -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Top Arcade Navigation Bar -->
+  <header class="arcade-header">
+    <div class="brand-section">
+      <div class="brand-logo-icon">⚡</div>
+      <div>
+        <span class="brand-title">CYBER-TYPER</span>
+        <span class="brand-tag">GRAND PRIX</span>
+      </div>
+    </div>
+
+    <!-- Player Level & XP Indicator -->
+    <div class="player-header-stats">
+      <div id="playerLevelBadge" class="level-badge">LVL 1</div>
+      <div class="xp-bar-container" title="XP progress towards next level">
+        <div id="playerXpFill" class="xp-bar-fill"></div>
+      </div>
+    </div>
+
+    <!-- Header Quick Actions -->
+    <div class="header-actions">
+      <button id="btnSoundToggle" class="btn-arcade" title="Toggle Sound FX">🔊 SOUND: ON</button>
+      <button id="btnOpenGarage" class="btn-arcade" title="Customize Car & Paint">🚗 GARAGE</button>
+      <button id="btnOpenStats" class="btn-arcade" title="Career Stats & Badges">🏆 TROPHIES</button>
+      <button id="btnOpenSettings" class="btn-arcade" title="Settings">⚙️ SETTINGS</button>
+    </div>
+  </header>
+
+  <!-- Main Game Arena -->
+  <main class="arcade-container">
+
+    <!-- Speedometer HUD Dashboard -->
+    <section class="hud-dashboard">
+      <!-- Left Column: Real-Time Performance -->
+      <div class="hud-metrics-column">
+        <div class="hud-metric-card">
+          <span class="label">ACCURACY</span>
+          <span id="hudAccuracy" class="val">100%</span>
+        </div>
+        <div class="hud-metric-card">
+          <span class="label">COMBO STREAK</span>
+          <span id="hudStreak" class="val">0</span>
+        </div>
+        <div class="hud-metric-card">
+          <span class="label">TRACK POSITION</span>
+          <span id="hudRank" class="val">1st 🥇</span>
+        </div>
+      </div>
+
+      <!-- Center Column: Speedometer Dial Gauge -->
+      <div class="hud-speedometer-box">
+        <div class="speed-gauge-wrap">
+          <div class="speed-gauge-arc"></div>
+          <div id="gaugeNeedle" class="gauge-needle-center">
+            <div class="gauge-needle-blade"></div>
+          </div>
+          <div class="gauge-pin"></div>
+        </div>
+        <div class="gauge-digital-readout">
+          <div id="gaugeWpm" class="wpm-val">0</div>
+          <div class="wpm-label">WORDS PER MINUTE</div>
+        </div>
+      </div>
+
+      <!-- Right Column: Nitro Booster & Race Controls -->
+      <div class="hud-controls-column">
+        <div id="nitroPill" class="nitro-pill-box">
+          <div class="nitro-header">
+            <span>NITROUS CHARGE</span>
+            <span style="font-size: 10px; opacity: 0.8;">[PRESS TAB]</span>
+          </div>
+          <div class="nitro-bar-track">
+            <div id="nitroBar" class="nitro-bar-fill"></div>
+          </div>
+        </div>
+        <div class="action-buttons-row">
+          <button id="btnStartRace" class="btn-race-primary">🚀 START RACE</button>
+          <button id="btnRestartRace" class="btn-race-secondary">🔄 NEW TRACK</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4-Lane Animated Race Track -->
+    <section class="race-track-card">
+      <div class="track-header">
+        <div class="track-circuit-title">NEO TOKYO CIRCUIT // SECTOR 7</div>
+        <div class="track-circuit-meta">GRAND PRIX SPRINT • 400M ASPHALT</div>
+      </div>
+
+      <div class="track-lanes-container">
+        <!-- Start & Finish Grid Markers -->
+        <div class="track-start-line"></div>
+        <div class="track-finish-line"></div>
+
+        <!-- Lane 1: Bot 1 -->
+        <div id="lane1" class="race-lane"></div>
+
+        <!-- Lane 2: Bot 2 -->
+        <div id="lane2" class="race-lane"></div>
+
+        <!-- Lane 3: Player Car -->
+        <div id="lane3" class="race-lane lane-player"></div>
+
+        <!-- Lane 4: Bot 3 or Personal Best Ghost -->
+        <div id="lane4" class="race-lane"></div>
+      </div>
+    </section>
+
+    <!-- Typing Arena Prompt & Input -->
+    <section class="typing-arena-card">
+      <div class="quote-metadata-bar">
+        <span id="quoteAuthor">— Loading passage...</span>
+        <span id="quoteCategory" class="quote-category-tag">CYBERPUNK • MEDIUM</span>
+      </div>
+
+      <!-- Interactive Words Target Area -->
+      <div id="wordsContainer" class="words-container" tabindex="0">
+        <!-- Words injected dynamically via JS -->
+      </div>
+
+      <!-- Invisible auto-focused typing input -->
+      <input id="typingInput" type="text" class="hidden-typing-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+      <div class="typing-shortcuts-hint">
+        <span>Type to race automatically</span>
+        <span><kbd>Space</kbd> submit word</span>
+        <span><kbd>Tab</kbd> fire nitro</span>
+        <span><kbd>Backspace</kbd> correct error</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 3-2-1-GO Countdown Overlay -->
+  <div id="countdownOverlay" class="countdown-overlay hidden">
+    <div id="countdownNumber" class="countdown-number">3</div>
+  </div>
+
+  <!-- Grand Prix Post-Race Podium Modal -->
+  <div id="modalPodium" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">🏁 GRAND PRIX PODIUM</h2>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="podium-stats-grid">
+        <div class="podium-stat-card">
+          <div id="podiumWpm" class="val">0</div>
+          <div class="lbl">FINAL WPM</div>
+        </div>
+        <div class="podium-stat-card">
+          <div id="podiumAccuracy" class="val">100%</div>
+          <div class="lbl">ACCURACY</div>
+        </div>
+        <div class="podium-stat-card">
+          <div id="podiumTime" class="val">0s</div>
+          <div class="lbl">LAP TIME</div>
+        </div>
+        <div class="podium-stat-card">
+          <div id="podiumRank" class="val">1st</div>
+          <div class="lbl">PLACEMENT</div>
+        </div>
+      </div>
+
+      <!-- Real-Time Speed Telemetry Graph -->
+      <div class="chart-wrapper">
+        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; letter-spacing: 1px;">
+          WPM VELOCITY TELEMETRY
+        </div>
+        <canvas id="speedChartCanvas"></canvas>
+      </div>
+
+      <!-- Racers Placement Standings -->
+      <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; letter-spacing: 1px;">
+        FINAL FINISHERS
+      </div>
+      <div id="podiumRacersList" class="podium-racers-list">
+        <!-- Standings injected dynamically -->
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+        <span style="font-size: 13px; color: var(--text-muted);">Career XP Gained:</span>
+        <span id="podiumXp" style="font-family: var(--font-mono); font-weight: 800; color: var(--neon-green); font-size: 16px;">+0 XP</span>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btnPodiumAgain" class="btn-race-primary">🏎️ RACE AGAIN (ENTER)</button>
+        <button id="btnPodiumGarage" class="btn-race-secondary">GARAGE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Garage Customization Modal -->
+  <div id="modalGarage" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">🚗 TUNING GARAGE</h2>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <!-- Live Car SVG Preview -->
+      <div id="garagePreview" class="garage-preview-box">
+        <!-- Live SVG injected -->
+      </div>
+
+      <!-- Chassis Models -->
+      <div class="garage-section-title">SELECT VEHICLE CHASSIS</div>
+      <div id="garageCarList" class="garage-grid">
+        <!-- Chassis cards injected -->
+      </div>
+
+      <!-- Paint Jobs -->
+      <div class="garage-section-title">NEON PAINT COATING</div>
+      <div id="garagePaintList" class="paint-swatches-row">
+        <!-- Paint swatches injected -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Career Stats & Trophy Room Modal -->
+  <div id="modalStats" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">🏆 CAREER TROPHIES & STATS</h2>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <!-- Career Numbers -->
+      <div class="podium-stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 16px;">
+        <div class="podium-stat-card">
+          <div id="statTotalRaces" class="val">0</div>
+          <div class="lbl">TOTAL RACES</div>
+        </div>
+        <div class="podium-stat-card">
+          <div id="statTotalWins" class="val">0</div>
+          <div class="lbl">VICTORIES</div>
+        </div>
+        <div class="podium-stat-card">
+          <div id="statTopWpm" class="val">0</div>
+          <div class="lbl">PERSONAL BEST</div>
+        </div>
+        <div class="podium-stat-card">
+          <div id="statAvgWpm" class="val">0</div>
+          <div class="lbl">AVERAGE WPM</div>
+        </div>
+        <div class="podium-stat-card">
+          <div id="statTotalWords" class="val">0</div>
+          <div class="lbl">WORDS TYPED</div>
+        </div>
+        <div class="podium-stat-card">
+          <div id="statTotalNitro" class="val">0</div>
+          <div class="lbl">NITROS USED</div>
+        </div>
+      </div>
+
+      <!-- Achievements Grid -->
+      <div class="garage-section-title">ACHIEVEMENT BADGES</div>
+      <div id="achievementsGrid" class="achievements-grid">
+        <!-- Badges injected -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="modalSettings" class="modal-backdrop hidden">
+    <div class="modal-content" style="max-width: 480px;">
+      <div class="modal-header">
+        <h2 class="modal-title">⚙️ RACE SETTINGS</h2>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div>
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">BOT DIFFICULTY</label>
+          <select id="settingDifficulty" style="width: 100%; padding: 10px; background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); color: #fff; border-radius: 8px; font-size: 14px;">
+            <option value="easy">Rookie Circuit (30 - 45 WPM)</option>
+            <option value="medium">Pro Grand Prix (50 - 70 WPM)</option>
+            <option value="hard">Master Division (75 - 100 WPM)</option>
+            <option value="adaptive">Dynamic Adaptive (Matches Your Speed)</option>
+          </select>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid var(--border-subtle);">
+          <div>
+            <div style="font-weight: 700; font-size: 13px;">Personal Best Ghost Car</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Race against a phantom car replaying your top run</div>
+          </div>
+          <input type="checkbox" id="settingGhostCheck" checked style="width: 18px; height: 18px; accent-color: var(--neon-purple); cursor: pointer;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Application Logic Modules -->
+  <script src="js/texts.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/cars.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/bots.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+
+  <!-- App Bootstrap -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const ui = new UIController();
+      game.prepareRace();
+      ui.renderWords();
+      ui.updateSoundButton(sounds.enabled);
+    });
+  </script>
+</body>
+</html>
+
