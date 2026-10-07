@@ -1,0 +1,257 @@
+/* ==========================================================
+   TypeRacer Arcade - Race Track & Vehicle Animation Stylesheet
+   ========================================================== */
+
+.race-track-card {
+  background: #080c14;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 16px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+/* Track Arena Header */
+.track-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.track-circuit-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--neon-cyan);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.track-circuit-title::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan);
+}
+
+.track-circuit-meta {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* Track Canvas / 4 Lanes Container */
+.track-lanes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+/* Start Line & Finish Line Banners */
+.track-start-line {
+  position: absolute;
+  left: 95px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.track-start-line::after {
+  content: "START";
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.track-finish-line {
+  position: absolute;
+  right: 28px;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background-image: 
+    linear-gradient(45deg, #000 25%, transparent 25%),
+    linear-gradient(-45deg, #000 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #000 75%),
+    linear-gradient(-45deg, transparent 75%, #000 75%);
+  background-size: 6px 6px;
+  background-color: #ffffff;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+  z-index: 10;
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+.track-finish-line::after {
+  content: "FINISH";
+  position: absolute;
+  top: -14px;
+  right: -8px;
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--neon-gold);
+  font-family: var(--font-mono);
+}
+
+/* Individual Race Lane */
+.race-lane {
+  background: #0f1523;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  height: 58px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 100px; /* offset for racer label on the left */
+  padding-right: 45px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+/* Subtle Animated Road Surface Lines */
+.race-lane::before {
+  content: "";
+  position: absolute;
+  left: 95px;
+  right: 35px;
+  top: 50%;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.08) 0px,
+    rgba(255, 255, 255, 0.08) 25px,
+    transparent 25px,
+    transparent 50px
+  );
+  pointer-events: none;
+}
+
+/* Highlighting Player's Lane (Lane 3) */
+.race-lane.lane-player {
+  background: linear-gradient(90deg, rgba(0, 240, 255, 0.08) 0%, rgba(15, 21, 35, 0.95) 100%);
+  border-color: rgba(0, 240, 255, 0.25);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.06), inset 0 0 20px rgba(0, 240, 255, 0.04);
+}
+
+/* Racer Badge on Left of Lane */
+.lane-racer-info {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 82px;
+  z-index: 15;
+}
+
+.racer-avatar {
+  font-size: 16px;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+}
+
+.racer-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.3px;
+}
+
+.racer-player-name {
+  color: var(--neon-cyan) !important;
+  font-weight: 800;
+  text-shadow: 0 0 6px rgba(0, 240, 255, 0.5);
+}
+
+/* Car Container */
+.track-car {
+  position: relative;
+  width: 90px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.1s linear;
+  will-change: transform;
+  z-index: 20;
+}
+
+.car-body-box {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.car-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.8));
+}
+
+/* Player Car Glow */
+.player-car-wrap .car-svg {
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.5));
+}
+
+/* Floating Rank Tag above Car */
+.car-rank-badge {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 5px;
+  color: var(--neon-gold);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Nitro Flame Effect */
+.nitro-flame {
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 16px;
+  background: radial-gradient(ellipse at right, #ffffff, #00f0ff 40%, #ff007f 80%, transparent 100%);
+  border-radius: 50% 0 0 50%;
+  filter: drop-shadow(0 0 8px #ff007f);
+  animation: flameFlicker 0.08s infinite alternate;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes flameFlicker {
+  0% { transform: translateY(-50%) scaleX(0.85) scaleY(0.9); opacity: 0.85; }
+  100% { transform: translateY(-50%) scaleX(1.3) scaleY(1.2); opacity: 1; }
+}
+
