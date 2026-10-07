@@ -1,0 +1,13 @@
+{
+  "name": "typeracer-arcade",
+  "version": "1.0.0",
+  "description": "Gamified High-Octane Typing Racing Game in Vanilla HTML, CSS, and Modern JavaScript",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -l 3000 ."
+  },
+  "keywords": ["typing", "typeracer", "arcade", "game", "speed-test"],
+  "author": "",
+  "license": "MIT"
+}
+
